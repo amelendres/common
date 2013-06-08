@@ -197,17 +197,19 @@ abstract class AbstractManagerRegistry implements ManagerRegistry
         }
 
         $proxyClass = new \ReflectionClass($class);
-        if ($proxyClass->implementsInterface($this->proxyInterfaceName)) {
+        
+        if ($proxyClass->isInterface() && $proxyClass->implementsInterface($this->proxyInterfaceName)) {
             $class = $proxyClass->getParentClass()->getName();
-        }
 
-        foreach ($this->managers as $id) {
-            $manager = $this->getService($id);
+            foreach ($this->managers as $id) {
+                $manager = $this->getService($id);
 
-            if (!$manager->getMetadataFactory()->isTransient($class)) {
-                return $manager;
+                if (!$manager->getMetadataFactory()->isTransient($class)) {
+                    return $manager;
+                }
             }
         }
+        return null;
     }
 
     /**
